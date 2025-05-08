@@ -92,8 +92,11 @@ namespace krri_ver1
             string[] sp_data = DataIn.Split(',');
             string temp_Show_data = "";
             string temp_CSV_data = "";
+            string [] FFT_HZ = new string[128];
+            string [] FFT_Mag= new string[128];
+            string FFT_main_Hz = "";
 
-            if (sp_data.Length > 5)
+            if (sp_data.Length > 5 && sp_data.Length < 7)
             {
 
                 //sp_data.Length-1 하는 이유 = 마지막 배열은 \r\n
@@ -113,7 +116,7 @@ namespace krri_ver1
                 Chart_Wind.Series["Series1"].Points.Add(Int32.Parse(sp_data[3]));
                 Chart_Vos.Series["Series1"].Points.Add(Int32.Parse(sp_data[4]));
 
-                if (Chart_Dust.Series["Series1"].Points.Count>10)
+                if (Chart_Dust.Series["Series1"].Points.Count > 10)
                 {
                     Chart_Dust.Series["Series1"].Points.RemoveAt(0);
                     Chart_Co2.Series["Series1"].Points.RemoveAt(0);
@@ -122,10 +125,28 @@ namespace krri_ver1
                     Chart_Vos.Series["Series1"].Points.RemoveAt(0);
                 }
 
-                DataGridView_FFT.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"),sp_data[0], sp_data[1], sp_data[2], sp_data[3], sp_data[4]);
-                DataGridView_FFT.Rows.
+                DataGridView_FFT.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), sp_data[0], sp_data[1], sp_data[2], sp_data[3], sp_data[4]);
 
 
+
+            }
+            else if (sp_data.Length > 10)
+            {
+                for (int i = 0; i < sp_data.Length - 2; i++)
+                {
+                    if (i % 2 == 0)
+                        FFT_HZ[i / 2] =  sp_data[i];
+                    else
+                        FFT_Mag[i / 2] = sp_data[i];
+                }
+                FFT_main_Hz = sp_data[sp_data.Length - 1];
+                
+                Chart_FFT.Series["Series1"].Points.Clear();
+                Lable_FFT_main.Text = FFT_main_Hz;
+                for (int i = 0; i < FFT_HZ.Length - 1; i++)
+                {
+                    Chart_FFT.Series["Series1"].Points.AddXY(float.Parse(FFT_HZ[i]), float.Parse(FFT_Mag[i]));
+                }
             }
         }
 

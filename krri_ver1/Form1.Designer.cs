@@ -103,7 +103,8 @@
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.Chart_FFT = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.Lable_FFT_main = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -118,7 +119,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.Chart_Dust)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView_FFT)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Chart_FFT)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -710,14 +711,15 @@
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.chart2);
+            this.tabPage3.BackColor = System.Drawing.Color.Black;
+            this.tabPage3.Controls.Add(this.Lable_FFT_main);
+            this.tabPage3.Controls.Add(this.Chart_FFT);
             this.tabPage3.Controls.Add(this.DataGridView_FFT);
             this.tabPage3.Location = new System.Drawing.Point(4, 44);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(1192, 600);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "FFT";
-            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // DataGridView_FFT
             // 
@@ -769,11 +771,13 @@
             this.Column5.HeaderText = "Freq3";
             this.Column5.Name = "Column5";
             // 
-            // chart2
+            // Chart_FFT
             // 
-            this.chart2.BackColor = System.Drawing.Color.Black;
+            this.Chart_FFT.BackColor = System.Drawing.Color.Black;
             chartArea9.AxisX.LineColor = System.Drawing.Color.LightSkyBlue;
             chartArea9.AxisX.MajorGrid.LineColor = System.Drawing.Color.LightSkyBlue;
+            chartArea9.AxisX.Maximum = 8000D;
+            chartArea9.AxisX.Minimum = 0D;
             chartArea9.AxisX.Title = "Hz";
             chartArea9.AxisX.TitleForeColor = System.Drawing.Color.LightSkyBlue;
             chartArea9.AxisX2.LineColor = System.Drawing.Color.LightSkyBlue;
@@ -783,19 +787,18 @@
             chartArea9.AxisY.LabelStyle.Interval = 0D;
             chartArea9.AxisY.LineColor = System.Drawing.Color.LightSkyBlue;
             chartArea9.AxisY.MajorGrid.LineColor = System.Drawing.Color.LightSkyBlue;
-            chartArea9.AxisY.Maximum = 1500D;
             chartArea9.AxisY.Minimum = 0D;
             chartArea9.AxisY.Title = "Mag";
             chartArea9.AxisY.TitleForeColor = System.Drawing.Color.LightSkyBlue;
             chartArea9.BackColor = System.Drawing.Color.Black;
             chartArea9.Name = "ChartArea1";
-            this.chart2.ChartAreas.Add(chartArea9);
+            this.Chart_FFT.ChartAreas.Add(chartArea9);
             legend9.Enabled = false;
             legend9.ForeColor = System.Drawing.Color.DarkGray;
             legend9.Name = "Legend1";
-            this.chart2.Legends.Add(legend9);
-            this.chart2.Location = new System.Drawing.Point(3, 274);
-            this.chart2.Name = "chart2";
+            this.Chart_FFT.Legends.Add(legend9);
+            this.Chart_FFT.Location = new System.Drawing.Point(3, 274);
+            this.Chart_FFT.Name = "Chart_FFT";
             series9.BorderWidth = 3;
             series9.ChartArea = "ChartArea1";
             series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
@@ -803,15 +806,25 @@
             series9.LabelForeColor = System.Drawing.Color.LightSkyBlue;
             series9.Legend = "Legend1";
             series9.Name = "Series1";
-            this.chart2.Series.Add(series9);
-            this.chart2.Size = new System.Drawing.Size(1182, 322);
-            this.chart2.TabIndex = 1;
-            this.chart2.Text = "chart1";
+            this.Chart_FFT.Series.Add(series9);
+            this.Chart_FFT.Size = new System.Drawing.Size(1182, 322);
+            this.Chart_FFT.TabIndex = 1;
+            this.Chart_FFT.Text = "chart1";
             title9.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             title9.ForeColor = System.Drawing.Color.LightSkyBlue;
             title9.Name = "Title1";
             title9.Text = "FFT";
-            this.chart2.Titles.Add(title9);
+            this.Chart_FFT.Titles.Add(title9);
+            // 
+            // Lable_FFT_main
+            // 
+            this.Lable_FFT_main.AutoSize = true;
+            this.Lable_FFT_main.ForeColor = System.Drawing.Color.LightSkyBlue;
+            this.Lable_FFT_main.Location = new System.Drawing.Point(1039, 283);
+            this.Lable_FFT_main.Name = "Lable_FFT_main";
+            this.Lable_FFT_main.Size = new System.Drawing.Size(18, 19);
+            this.Lable_FFT_main.TabIndex = 2;
+            this.Lable_FFT_main.Text = "-";
             // 
             // Form1
             // 
@@ -837,8 +850,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.Chart_Co2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Chart_Dust)).EndInit();
             this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView_FFT)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Chart_FFT)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -883,7 +897,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart2;
+        private System.Windows.Forms.DataVisualization.Charting.Chart Chart_FFT;
+        private System.Windows.Forms.Label Lable_FFT_main;
     }
 }
 
