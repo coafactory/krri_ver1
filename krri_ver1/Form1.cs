@@ -19,6 +19,15 @@ namespace krri_ver1
         string DataIn;
         string CSV_Data;
         bool FFT_Alram_flag = false;
+
+        public void Com_data(string Com, string Baud, string Data, string Stop, string parity)
+        {
+            Label_Com_Info.Text = Com;
+            Label_Baud_Info.Text = Baud;
+            Label_Data_Info.Text = Data;
+            Label_Stop_Info.Text = Stop;
+            Label_Parity_Info.Text = parity;
+        }
         public Form1()
         {
             InitializeComponent();
@@ -26,27 +35,33 @@ namespace krri_ver1
 
         private void button1_Click(object sender, EventArgs e)
         {
+            /*
             string[] ports = SerialPort.GetPortNames();
             Combobox_Com.Items.Clear();
             Combobox_Com.Items.AddRange(ports);
+            */
+            Com_para com_Para = new Com_para(this);
+            com_Para.Show();
+
+
         }
 
         private void Button_connect_Click(object sender, EventArgs e)
         {
             try
             {
-                serialPort1.PortName = Combobox_Com.Text;
-                serialPort1.BaudRate = Convert.ToInt32(Combobox_Baud.Text);
-                serialPort1.DataBits = Convert.ToInt32(Combobox_Data.Text);
-                serialPort1.StopBits = (StopBits)Enum.Parse(typeof(StopBits), Combobox_Stop.Text);
-                serialPort1.Parity = (Parity)Enum.Parse(typeof(Parity), Combobox_Parity.Text);
+                serialPort1.PortName = Label_Com_Info.Text;
+                serialPort1.BaudRate = Convert.ToInt32(Label_Baud_Info.Text);
+                serialPort1.DataBits = Convert.ToInt32(Label_Data_Info.Text);
+                serialPort1.StopBits = (StopBits)Enum.Parse(typeof(StopBits), Label_Stop_Info.Text);
+                serialPort1.Parity = (Parity)Enum.Parse(typeof(Parity), Label_Parity_Info.Text);
                 serialPort1.DtrEnable = true;
                 serialPort1.RtsEnable = true;
 
                 serialPort1.Open();
                 serialPort1.DiscardInBuffer();
                 Thread.Sleep(2000);
-                progressBar1.Value = 100;
+                Button_Connet_state.Text = Label_Com_Info.Text+" conneted";
             }
             catch (Exception err)
             {
@@ -59,15 +74,14 @@ namespace krri_ver1
             if(serialPort1.IsOpen)
             {
                 serialPort1.Close();
-                progressBar1.Value = 0;
+                Button_Connet_state.Text = "-";
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             string[] ports = SerialPort.GetPortNames();
-            Combobox_Com.Items.Clear();
-            Combobox_Com.Items.AddRange(ports);
+            Label_Com_Info.Text = ports[0];
         }
 
         private void Button_Clear_Click(object sender, EventArgs e)
@@ -116,7 +130,7 @@ namespace krri_ver1
                 Chart_Co2.Series["Series1"].Points.Add(Int32.Parse(sp_data[1]));
                 Chart_Sound.Series["Series1"].Points.Add(Int32.Parse(sp_data[2]));
                 Chart_Wind.Series["Series1"].Points.Add(Int32.Parse(sp_data[3]));
-                Chart_Vos.Series["Series1"].Points.Add(Int32.Parse(sp_data[4]));
+                Chart_Voc.Series["Series1"].Points.Add(Int32.Parse(sp_data[4]));
                 Chart_Temp.Series["Series1"].Points.Add(float.Parse(sp_data[5]));
                 Chart_Humid.Series["Series1"].Points.Add(float.Parse(sp_data[6]));
                 Label_Dust.Text = sp_data[0];
@@ -133,12 +147,45 @@ namespace krri_ver1
                     Chart_Co2.Series["Series1"].Points.RemoveAt(0);
                     Chart_Sound.Series["Series1"].Points.RemoveAt(0);
                     Chart_Wind.Series["Series1"].Points.RemoveAt(0);
-                    Chart_Vos.Series["Series1"].Points.RemoveAt(0);
+                    Chart_Voc.Series["Series1"].Points.RemoveAt(0);
                     Chart_Temp.Series["Series1"].Points.RemoveAt(0);
                     Chart_Humid.Series["Series1"].Points.RemoveAt(0);
                 }
 
-                //DataGridView_FFT.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), sp_data[0], sp_data[1], sp_data[2], sp_data[3], sp_data[4]);
+
+                //알람 트리거링
+                if(Int32.Parse(sp_data[0])>200)
+                {
+                    Button_Dust_Alram.BackColor = Color.LightSkyBlue;
+                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Dust", sp_data[0]);
+                }
+                if (Int32.Parse(sp_data[1]) > 750)
+                {
+                    Button_Co2_Alram.BackColor = Color.LightSkyBlue;
+                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Co2", sp_data[1]);
+                }
+                if (Int32.Parse(sp_data[3]) > 1500)
+                {
+                    Button_Wind_Alram.BackColor = Color.LightSkyBlue;
+                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Wind", sp_data[3]);
+                }
+                if (Int32.Parse(sp_data[4]) < 3000)
+                {
+                    Button_Voc_Alram.BackColor = Color.LightSkyBlue;
+                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Voc", sp_data[4]);
+                }
+                if (float.Parse(sp_data[5]) > 30.0)
+                {
+                    Button_Temp_Alram.BackColor = Color.LightSkyBlue;
+                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Temperature", sp_data[5]);
+                }
+                if (float.Parse(sp_data[6]) > 60.0)
+                {
+                    Button_Humi_Alram.BackColor = Color.LightSkyBlue;
+                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"),"Humidity",sp_data[6]);
+                }
+
+
 
 
 
@@ -153,8 +200,8 @@ namespace krri_ver1
                         FFT_Mag[i / 2] = sp_data[i];
                 }
 
-                FFT_main_Hz = sp_data[sp_data.Length - 1];
-                FFT_Max_Value = sp_data[sp_data.Length - 2];
+                FFT_main_Hz = sp_data[sp_data.Length - 2];
+                FFT_Max_Value = sp_data[sp_data.Length - 3];
                 string FFT_Hz_Save = "";
                 string FFT_Mag_Save = "";
                 for(int i = 0;i<FFT_HZ.Length-1;i++)
@@ -174,6 +221,7 @@ namespace krri_ver1
                 {
                     Chart_FFT.Series["Series1"].Points.AddXY(float.Parse(FFT_HZ[i]), float.Parse(FFT_Mag[i]));
                 }
+                Button_FFT_Alram.BackColor = Color.LightSkyBlue;
             }
         }
 
@@ -208,6 +256,79 @@ namespace krri_ver1
             }
         }
 
+        private void Button_FFT_Alram_Click(object sender, EventArgs e)
+        {
+            Button_FFT_Alram.BackColor = Color.Black;
+        }
+
+        private void Button_Dust_Alram_Click(object sender, EventArgs e)
+        {
+            Button_Dust_Alram.BackColor = Color.Black;
+        }
+
+        private void Button_Co2_Alram_Click(object sender, EventArgs e)
+        {
+            Button_Co2_Alram.BackColor = Color.Black;
+        }
+
+        private void Button_Wind_Alram_Click(object sender, EventArgs e)
+        {
+            Button_Wind_Alram.BackColor = Color.Black;
+        }
+
+        private void Button_Voc_Alram_Click(object sender, EventArgs e)
+        {
+            Button_Voc_Alram.BackColor = Color.Black;
+        }
+
+        private void Button_Temp_Alram_Click(object sender, EventArgs e)
+        {
+            Button_Temp_Alram.BackColor = Color.Black;
+        }
+
+        private void Button_Humi_Alram_Click(object sender, EventArgs e)
+        {
+            Button_Humi_Alram.BackColor = Color.Black;
+        }
+
+        private void Button_FFT_Clear_Click(object sender, EventArgs e)
+        {
+            DataGridView_FFT.Rows.Clear();
+        }
+
+        private void Button_FFT_Save_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Text file(*.txt)|*.txt|CSV file(*.csv)|*.csv";
+            sfd.FileName = DateTime.Now.ToString("yyyyMMddhhmm")+"_FFT";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                using (StreamWriter sw = new StreamWriter(sfd.FileName, false, Encoding.Default))
+                {
+                    int rowCount = DataGridView_FFT.Rows.Count;
+                    string header = "";
+                    for (int j = 0; j < DataGridView_FFT.Columns.Count; j++)
+                    {
+                        header += DataGridView_FFT.Columns[j].HeaderText+',';
+                    }
+                    sw.WriteLine(header);
+                    for (int i=0;i<rowCount;i++)
+                    {
+                        List<string> strList = new List<string>();
+                        for (int j=0; j<DataGridView_FFT.Columns.Count;j++)
+                        {
+                            strList.Add(DataGridView_FFT[j, i].Value.ToString());
+                        }
+                        string[] strArray = strList.ToArray();
+                        string strcsvData = strArray[0] +','+strArray[1] + ',' +strArray[2] + strArray[3] + strArray[4];
+                         
+                        sw.WriteLine(strcsvData);
+                    }
+                    sw.Close();
+                }
+            }
+            
+        }
     }
 
 }
