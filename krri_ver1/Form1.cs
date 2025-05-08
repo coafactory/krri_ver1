@@ -18,6 +18,7 @@ namespace krri_ver1
     {
         string DataIn;
         string CSV_Data;
+        bool FFT_Alram_flag = false;
         public Form1()
         {
             InitializeComponent();
@@ -95,8 +96,9 @@ namespace krri_ver1
             string [] FFT_HZ = new string[128];
             string [] FFT_Mag= new string[128];
             string FFT_main_Hz = "";
+            string FFT_Max_Value = "";
 
-            if (sp_data.Length > 5 && sp_data.Length < 7)
+            if (sp_data.Length > 5 && sp_data.Length < 10)
             {
 
                 //sp_data.Length-1 하는 이유 = 마지막 배열은 \r\n
@@ -115,31 +117,56 @@ namespace krri_ver1
                 Chart_Sound.Series["Series1"].Points.Add(Int32.Parse(sp_data[2]));
                 Chart_Wind.Series["Series1"].Points.Add(Int32.Parse(sp_data[3]));
                 Chart_Vos.Series["Series1"].Points.Add(Int32.Parse(sp_data[4]));
+                Chart_Temp.Series["Series1"].Points.Add(float.Parse(sp_data[5]));
+                Chart_Humid.Series["Series1"].Points.Add(float.Parse(sp_data[6]));
+                Label_Dust.Text = sp_data[0];
+                Label_Co2.Text = sp_data[1];
+                Label_Sound.Text = sp_data[2];
+                Label_Wind.Text = sp_data[3];
+                Label_Vos.Text = sp_data[4];
+                Label_Temp.Text = sp_data[5];
+                Label_Humi.Text = sp_data[6];
 
-                if (Chart_Dust.Series["Series1"].Points.Count > 10)
+                if (Chart_Dust.Series["Series1"].Points.Count > 20)
                 {
                     Chart_Dust.Series["Series1"].Points.RemoveAt(0);
                     Chart_Co2.Series["Series1"].Points.RemoveAt(0);
                     Chart_Sound.Series["Series1"].Points.RemoveAt(0);
                     Chart_Wind.Series["Series1"].Points.RemoveAt(0);
                     Chart_Vos.Series["Series1"].Points.RemoveAt(0);
+                    Chart_Temp.Series["Series1"].Points.RemoveAt(0);
+                    Chart_Humid.Series["Series1"].Points.RemoveAt(0);
                 }
 
-                DataGridView_FFT.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), sp_data[0], sp_data[1], sp_data[2], sp_data[3], sp_data[4]);
+                //DataGridView_FFT.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), sp_data[0], sp_data[1], sp_data[2], sp_data[3], sp_data[4]);
 
 
 
             }
-            else if (sp_data.Length > 10)
+            else if (sp_data.Length > 10)   //FFT 발생
             {
-                for (int i = 0; i < sp_data.Length - 2; i++)
+                for (int i = 0; i < sp_data.Length - 3; i++)
                 {
                     if (i % 2 == 0)
                         FFT_HZ[i / 2] =  sp_data[i];
                     else
                         FFT_Mag[i / 2] = sp_data[i];
                 }
+
                 FFT_main_Hz = sp_data[sp_data.Length - 1];
+                FFT_Max_Value = sp_data[sp_data.Length - 2];
+                string FFT_Hz_Save = "";
+                string FFT_Mag_Save = "";
+                for(int i = 0;i<FFT_HZ.Length-1;i++)
+                {
+                    FFT_Hz_Save += FFT_HZ[i]+",";
+                    FFT_Mag_Save += FFT_Mag[i]+",";
+                }
+                int lengthdd = FFT_HZ.Length;
+                FFT_Hz_Save += FFT_HZ[FFT_HZ.Length-1];
+                FFT_Mag_Save += FFT_Mag[FFT_HZ.Length-1];
+
+                DataGridView_FFT.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), FFT_main_Hz, FFT_Max_Value,FFT_Hz_Save,FFT_Mag_Save);
                 
                 Chart_FFT.Series["Series1"].Points.Clear();
                 Lable_FFT_main.Text = FFT_main_Hz;
@@ -161,6 +188,23 @@ namespace krri_ver1
                 {
                     sw.WriteLine(CSV_Data);
                 }
+            }
+        }
+
+        private void DataGridView_FFT_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            string Disp_Main_Hz = DataGridView_FFT.Rows[this.DataGridView_FFT.CurrentCellAddress.Y].Cells[1].Value.ToString();
+            string Disp_Hz = DataGridView_FFT.Rows[this.DataGridView_FFT.CurrentCellAddress.Y].Cells[3].Value.ToString();
+            string Disp_Mag = DataGridView_FFT.Rows[this.DataGridView_FFT.CurrentCellAddress.Y].Cells[4].Value.ToString();
+
+            string[] Disp_Hz_splite = Disp_Hz.Split(',');
+            string[] Disp_Mag_splite = Disp_Mag.Split(',');
+
+            Chart_FFT.Series["Series1"].Points.Clear();
+            Lable_FFT_main.Text = Disp_Main_Hz;
+            for (int i = 0; i < Disp_Hz_splite.Length - 1; i++)
+            {
+                Chart_FFT.Series["Series1"].Points.AddXY(float.Parse(Disp_Hz_splite[i]), float.Parse(Disp_Mag_splite[i]));
             }
         }
 
