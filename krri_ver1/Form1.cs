@@ -126,11 +126,11 @@ namespace krri_ver1
                 TextBox_main.Text = DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss") + "\t" + temp_Show_data + "\r\n" + TextBox_main.Text;
                 CSV_Data = CSV_Data + DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss") + "," + temp_CSV_data + "\r\n";
 
-                Chart_Dust.Series["Series1"].Points.Add(Int32.Parse(sp_data[0]));
-                Chart_Co2.Series["Series1"].Points.Add(Int32.Parse(sp_data[1]));
-                Chart_Sound.Series["Series1"].Points.Add(Int32.Parse(sp_data[2]));
-                Chart_Wind.Series["Series1"].Points.Add(Int32.Parse(sp_data[3]));
-                Chart_Voc.Series["Series1"].Points.Add(Int32.Parse(sp_data[4]));
+                Chart_Dust.Series["Series1"].Points.Add(float.Parse(sp_data[0]));
+                Chart_Co2.Series["Series1"].Points.Add(float.Parse(sp_data[1]));
+                Chart_Sound.Series["Series1"].Points.Add(float.Parse(sp_data[2]));
+                Chart_Wind.Series["Series1"].Points.Add(float.Parse(sp_data[3]));
+                Chart_Voc.Series["Series1"].Points.Add(float.Parse(sp_data[4]));
                 Chart_Temp.Series["Series1"].Points.Add(float.Parse(sp_data[5]));
                 Chart_Humid.Series["Series1"].Points.Add(float.Parse(sp_data[6]));
                 Label_Dust.Text = sp_data[0];
@@ -154,22 +154,22 @@ namespace krri_ver1
 
 
                 //알람 트리거링
-                if(Int32.Parse(sp_data[0])>200)
+                if(float.Parse(sp_data[0])>200)
                 {
                     Button_Dust_Alram.BackColor = Color.LightSkyBlue;
                     dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Dust", sp_data[0]);
                 }
-                if (Int32.Parse(sp_data[1]) > 750)
+                if (float.Parse(sp_data[1]) > 750)
                 {
                     Button_Co2_Alram.BackColor = Color.LightSkyBlue;
                     dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Co2", sp_data[1]);
                 }
-                if (Int32.Parse(sp_data[3]) > 1500)
+                if (float.Parse(sp_data[3]) > 1500)
                 {
                     Button_Wind_Alram.BackColor = Color.LightSkyBlue;
                     dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Wind", sp_data[3]);
                 }
-                if (Int32.Parse(sp_data[4]) < 3000)
+                if (float.Parse(sp_data[4]) > 1300)
                 {
                     Button_Voc_Alram.BackColor = Color.LightSkyBlue;
                     dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Voc", sp_data[4]);
@@ -329,6 +329,7 @@ namespace krri_ver1
             }
             
         }
+
     }
 
 }
