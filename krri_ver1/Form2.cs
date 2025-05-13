@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO.Ports;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -33,7 +34,8 @@ namespace krri_ver1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            form1.Threshold_Value(Dust_Value.Text,Co2_Value.Text,Sound_Value.Text,Wind_value.Text,Voc_Value.Text,Temperature_Value.Text,Humidity_Value.Text );
+            form1.Threshold_Value(Dust_Value.Text, Co2_Value.Text, Sound_Value.Text, Wind_value.Text, Voc_Value.Text, Temperature_Value.Text, Humidity_Value.Text);
+            form1.Send_dB_change(Sound_Value.Text);
             this.Close();
         }
     }

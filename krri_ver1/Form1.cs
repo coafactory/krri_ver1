@@ -22,7 +22,7 @@ namespace krri_ver1
         //Threshold value
         float Dust_TH = Properties.Settings.Default.Dust_TH;
         float Co2_TH = Properties.Settings.Default.Co2_TH;
-        float Sound_Th = Properties.Settings.Default.Sound_TH;
+        float Sound_TH = Properties.Settings.Default.Sound_TH;
         float Wind_TH = Properties.Settings.Default.Wind_TH;
         float Voc_TH = Properties.Settings.Default.Voc_TH;
         float Temperature_TH = Properties.Settings.Default.Temperature_TH;
@@ -53,7 +53,7 @@ namespace krri_ver1
 
             Dust_TH = Properties.Settings.Default.Dust_TH;
             Co2_TH = Properties.Settings.Default.Co2_TH;
-            Sound_Th = Properties.Settings.Default.Sound_TH;
+            Sound_TH = Properties.Settings.Default.Sound_TH;
             Wind_TH = Properties.Settings.Default.Wind_TH;
             Voc_TH = Properties.Settings.Default.Voc_TH;
             Temperature_TH = Properties.Settings.Default.Temperature_TH;
@@ -162,7 +162,7 @@ namespace krri_ver1
                 Chart_Co2.Series["Series1"].Points.Add(float.Parse(sp_data[1]));
                 Chart_Co2.Series["Series2"].Points.Add(Co2_TH);
                 Chart_Sound.Series["Series1"].Points.Add(float.Parse(sp_data[2]));
-                Chart_Sound.Series["Series2"].Points.Add(Sound_Th);
+                Chart_Sound.Series["Series2"].Points.Add(Sound_TH);
                 Chart_Wind.Series["Series1"].Points.Add(float.Parse(sp_data[3]));
                 Chart_Wind.Series["Series2"].Points.Add(Wind_TH);
                 Chart_Voc.Series["Series1"].Points.Add(float.Parse(sp_data[4]));
@@ -381,13 +381,13 @@ namespace krri_ver1
         }
 
         // 알람 버튼
-
-        private void button2_Click(object sender, EventArgs e)
+        private void Button_Alram_Clear_Click(object sender, EventArgs e)
         {
             dataGridView_Alram.Rows.Clear();
         }
 
-        private void button2_Click_1(object sender, EventArgs e)
+
+        private void Button_Alram_save_Click(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Text file(*.txt)|*.txt|CSV file(*.csv)|*.csv";
@@ -420,15 +420,21 @@ namespace krri_ver1
             }
         }
 
-        private void button2_Click_2(object sender, EventArgs e)
+
+        private void button2_Click(object sender, EventArgs e)
         {
             Form2 form = new Form2(this);
-            form.Threshold_Value_change(Dust_TH,Co2_TH,Sound_Th,Wind_TH,Voc_TH,Temperature_TH,Humidity_TH);
+            form.Threshold_Value_change(Dust_TH, Co2_TH, Sound_TH, Wind_TH, Voc_TH, Temperature_TH, Humidity_TH);
             form.Show();
-
         }
 
-        
+        public void Send_dB_change(string new_dB_value)
+        {
+            if(serialPort1.IsOpen)
+            {
+                serialPort1.WriteLine(new_dB_value);
+            }
+        }
     }
 
 }
