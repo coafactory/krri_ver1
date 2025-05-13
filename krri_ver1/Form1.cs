@@ -18,7 +18,18 @@ namespace krri_ver1
     {
         string DataIn;
         string CSV_Data;
-        bool FFT_Alram_flag = false;
+
+        //Threshold value
+        float Dust_TH = Properties.Settings.Default.Dust_TH;
+        float Co2_TH = Properties.Settings.Default.Co2_TH;
+        float Sound_Th = Properties.Settings.Default.Sound_TH;
+        float Wind_TH = Properties.Settings.Default.Wind_TH;
+        float Voc_TH = Properties.Settings.Default.Voc_TH;
+        float Temperature_TH = Properties.Settings.Default.Temperature_TH;
+        float Humidity_TH = Properties.Settings.Default.Humidity_TH;
+
+
+
 
         public void Com_data(string Com, string Baud, string Data, string Stop, string parity)
         {
@@ -27,6 +38,26 @@ namespace krri_ver1
             Label_Data_Info.Text = Data;
             Label_Stop_Info.Text = Stop;
             Label_Parity_Info.Text = parity;
+        }
+
+        public void Threshold_Value(string Dust, string Co2, string Sound, string Wind, string Voc, string Temperature, string Humidity)
+        {
+            Properties.Settings.Default.Dust_TH = float.Parse(Dust);
+            Properties.Settings.Default.Co2_TH = float.Parse(Co2);
+            Properties.Settings.Default.Sound_TH = float.Parse(Sound);
+            Properties.Settings.Default.Wind_TH = float.Parse(Wind);
+            Properties.Settings.Default.Voc_TH = float.Parse(Voc);
+            Properties.Settings.Default.Temperature_TH = float.Parse(Temperature);
+            Properties.Settings.Default.Humidity_TH = float.Parse(Humidity);
+            Properties.Settings.Default.Save();
+
+            Dust_TH = Properties.Settings.Default.Dust_TH;
+            Co2_TH = Properties.Settings.Default.Co2_TH;
+            Sound_Th = Properties.Settings.Default.Sound_TH;
+            Wind_TH = Properties.Settings.Default.Wind_TH;
+            Voc_TH = Properties.Settings.Default.Voc_TH;
+            Temperature_TH = Properties.Settings.Default.Temperature_TH;
+            Humidity_TH = Properties.Settings.Default.Humidity_TH;
         }
         public Form1()
         {
@@ -127,12 +158,19 @@ namespace krri_ver1
                 CSV_Data = CSV_Data + DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss") + "," + temp_CSV_data + "\r\n";
 
                 Chart_Dust.Series["Series1"].Points.Add(float.Parse(sp_data[0]));
+                Chart_Dust.Series["Series2"].Points.Add(Dust_TH);
                 Chart_Co2.Series["Series1"].Points.Add(float.Parse(sp_data[1]));
+                Chart_Co2.Series["Series2"].Points.Add(Co2_TH);
                 Chart_Sound.Series["Series1"].Points.Add(float.Parse(sp_data[2]));
+                Chart_Sound.Series["Series2"].Points.Add(Sound_Th);
                 Chart_Wind.Series["Series1"].Points.Add(float.Parse(sp_data[3]));
+                Chart_Wind.Series["Series2"].Points.Add(Wind_TH);
                 Chart_Voc.Series["Series1"].Points.Add(float.Parse(sp_data[4]));
+                Chart_Voc.Series["Series2"].Points.Add(Voc_TH);
                 Chart_Temp.Series["Series1"].Points.Add(float.Parse(sp_data[5]));
+                Chart_Temp.Series["Series2"].Points.Add(Temperature_TH);
                 Chart_Humid.Series["Series1"].Points.Add(float.Parse(sp_data[6]));
+                Chart_Humid.Series["Series2"].Points.Add(Humidity_TH);
                 Label_Dust.Text = sp_data[0];
                 Label_Co2.Text = sp_data[1];
                 Label_Sound.Text = sp_data[2];
@@ -150,39 +188,47 @@ namespace krri_ver1
                     Chart_Voc.Series["Series1"].Points.RemoveAt(0);
                     Chart_Temp.Series["Series1"].Points.RemoveAt(0);
                     Chart_Humid.Series["Series1"].Points.RemoveAt(0);
+
+                    Chart_Dust.Series["Series2"].Points.RemoveAt(0);
+                    Chart_Co2.Series["Series2"].Points.RemoveAt(0);
+                    Chart_Sound.Series["Series2"].Points.RemoveAt(0);
+                    Chart_Wind.Series["Series2"].Points.RemoveAt(0);
+                    Chart_Voc.Series["Series2"].Points.RemoveAt(0);
+                    Chart_Temp.Series["Series2"].Points.RemoveAt(0);
+                    Chart_Humid.Series["Series2"].Points.RemoveAt(0);
                 }
 
 
                 //알람 트리거링
-                if(float.Parse(sp_data[0])>200)
+                if(float.Parse(sp_data[0])> Dust_TH)
                 {
                     Button_Dust_Alram.BackColor = Color.LightSkyBlue;
-                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Dust", sp_data[0]);
+                    dataGridView_Alram.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Dust", sp_data[0]);
                 }
-                if (float.Parse(sp_data[1]) > 750)
+                if (float.Parse(sp_data[1]) > Co2_TH)
                 {
                     Button_Co2_Alram.BackColor = Color.LightSkyBlue;
-                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Co2", sp_data[1]);
+                    dataGridView_Alram.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Co2", sp_data[1]);
                 }
-                if (float.Parse(sp_data[3]) > 1500)
+                if (float.Parse(sp_data[3]) > Wind_TH)
                 {
                     Button_Wind_Alram.BackColor = Color.LightSkyBlue;
-                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Wind", sp_data[3]);
+                    dataGridView_Alram.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Wind", sp_data[3]);
                 }
-                if (float.Parse(sp_data[4]) > 1300)
+                if (float.Parse(sp_data[4]) > Voc_TH)
                 {
                     Button_Voc_Alram.BackColor = Color.LightSkyBlue;
-                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Voc", sp_data[4]);
+                    dataGridView_Alram.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Voc", sp_data[4]);
                 }
-                if (float.Parse(sp_data[5]) > 30.0)
+                if (float.Parse(sp_data[5]) > Temperature_TH)
                 {
                     Button_Temp_Alram.BackColor = Color.LightSkyBlue;
-                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Temperature", sp_data[5]);
+                    dataGridView_Alram.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Temperature", sp_data[5]);
                 }
-                if (float.Parse(sp_data[6]) > 60.0)
+                if (float.Parse(sp_data[6]) > Humidity_TH)
                 {
                     Button_Humi_Alram.BackColor = Color.LightSkyBlue;
-                    dataGridView_Event.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"),"Humidity",sp_data[6]);
+                    dataGridView_Alram.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"),"Humidity",sp_data[6]);
                 }
 
 
@@ -291,6 +337,10 @@ namespace krri_ver1
             Button_Humi_Alram.BackColor = Color.Black;
         }
 
+
+
+        //FFT 버튼
+
         private void Button_FFT_Clear_Click(object sender, EventArgs e)
         {
             DataGridView_FFT.Rows.Clear();
@@ -330,6 +380,55 @@ namespace krri_ver1
             
         }
 
+        // 알람 버튼
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            dataGridView_Alram.Rows.Clear();
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Text file(*.txt)|*.txt|CSV file(*.csv)|*.csv";
+            sfd.FileName = DateTime.Now.ToString("yyyyMMddhhmm") + "_Alram_log";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                using (StreamWriter sw = new StreamWriter(sfd.FileName, false, Encoding.Default))
+                {
+                    int rowCount = dataGridView_Alram.Rows.Count;
+                    string header = "";
+                    for (int j = 0; j < dataGridView_Alram.Columns.Count; j++)
+                    {
+                        header += dataGridView_Alram.Columns[j].HeaderText + ',';
+                    }
+                    sw.WriteLine(header);
+                    for (int i = 0; i < rowCount; i++)
+                    {
+                        List<string> strList = new List<string>();
+                        for (int j = 0; j < dataGridView_Alram.Columns.Count; j++)
+                        {
+                            strList.Add(dataGridView_Alram[j, i].Value.ToString());
+                        }
+                        string[] strArray = strList.ToArray();
+                        string strcsvData = strArray[0] + ',' + strArray[1] + ',' + strArray[2];
+
+                        sw.WriteLine(strcsvData);
+                    }
+                    sw.Close();
+                }
+            }
+        }
+
+        private void button2_Click_2(object sender, EventArgs e)
+        {
+            Form2 form = new Form2(this);
+            form.Threshold_Value_change(Dust_TH,Co2_TH,Sound_Th,Wind_TH,Voc_TH,Temperature_TH,Humidity_TH);
+            form.Show();
+
+        }
+
+        
     }
 
 }
