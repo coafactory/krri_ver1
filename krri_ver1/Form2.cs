@@ -31,11 +31,6 @@ namespace krri_ver1
             Humidity_Value.Text = Convert.ToString(Humidity);
         }
 
-        private void Form2_Load(object sender, EventArgs e)
-        {
-            
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             form1.Threshold_Value(Dust_Value.Text,Co2_Value.Text,Sound_Value.Text,Wind_value.Text,Voc_Value.Text,Temperature_Value.Text,Humidity_Value.Text );
