@@ -21,7 +21,7 @@ namespace krri_ver1
             form1 = form;
         }
 
-        public void Threshold_Value_change(float Dust, float Co2, float Sound, float Wind, float Voc, float Temperature, float Humidity)
+        public void Threshold_Value_change(float Dust, float Co2, float Sound, float Wind, float Voc, float Temperature, float Humidity, float Pressure)
         {
             Dust_Value.Text = Convert.ToString(Dust);
             Co2_Value.Text = Convert.ToString(Co2);
@@ -30,13 +30,16 @@ namespace krri_ver1
             Voc_Value.Text = Convert.ToString(Voc);
             Temperature_Value.Text = Convert.ToString(Temperature);
             Humidity_Value.Text = Convert.ToString(Humidity);
+            Pressure_Value.Text = Convert.ToString(Pressure);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            form1.Threshold_Value(Dust_Value.Text, Co2_Value.Text, Sound_Value.Text, Wind_value.Text, Voc_Value.Text, Temperature_Value.Text, Humidity_Value.Text);
+            form1.Threshold_Value(Dust_Value.Text, Co2_Value.Text, Sound_Value.Text, Wind_value.Text, Voc_Value.Text, Temperature_Value.Text, Humidity_Value.Text, Pressure_Value.Text);
             form1.Send_dB_change(Sound_Value.Text);
             this.Close();
         }
+
+       
     }
 }

@@ -23,5 +23,11 @@
     <Setting Name="Sound_TH" Type="System.Single" Scope="User">
       <Value Profile="(Default)">95</Value>
     </Setting>
+    <Setting Name="Pressure_TH" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">110</Value>
+    </Setting>
+    <Setting Name="설정" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

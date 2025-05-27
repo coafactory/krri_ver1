@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Net.Mail;
 using System.IO;
+using static System.Net.WebRequestMethods;
 
 namespace krri_ver1
 {
@@ -27,8 +28,9 @@ namespace krri_ver1
         float Voc_TH = Properties.Settings.Default.Voc_TH;
         float Temperature_TH = Properties.Settings.Default.Temperature_TH;
         float Humidity_TH = Properties.Settings.Default.Humidity_TH;
+        float Pressure_TH = Properties.Settings.Default.Pressure_TH;
 
-
+        
 
 
         public void Com_data(string Com, string Baud, string Data, string Stop, string parity)
@@ -40,7 +42,7 @@ namespace krri_ver1
             Label_Parity_Info.Text = parity;
         }
 
-        public void Threshold_Value(string Dust, string Co2, string Sound, string Wind, string Voc, string Temperature, string Humidity)
+        public void Threshold_Value(string Dust, string Co2, string Sound, string Wind, string Voc, string Temperature, string Humidity, string Pressure)
         {
             Properties.Settings.Default.Dust_TH = float.Parse(Dust);
             Properties.Settings.Default.Co2_TH = float.Parse(Co2);
@@ -49,6 +51,7 @@ namespace krri_ver1
             Properties.Settings.Default.Voc_TH = float.Parse(Voc);
             Properties.Settings.Default.Temperature_TH = float.Parse(Temperature);
             Properties.Settings.Default.Humidity_TH = float.Parse(Humidity);
+            Properties.Settings.Default.Pressure_TH = float.Parse(Pressure);
             Properties.Settings.Default.Save();
 
             Dust_TH = Properties.Settings.Default.Dust_TH;
@@ -58,11 +61,26 @@ namespace krri_ver1
             Voc_TH = Properties.Settings.Default.Voc_TH;
             Temperature_TH = Properties.Settings.Default.Temperature_TH;
             Humidity_TH = Properties.Settings.Default.Humidity_TH;
+            Pressure_TH = Properties.Settings.Default.Pressure_TH;
+
         }
         public Form1()
         {
             InitializeComponent();
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
+            this.UpdateStyles();
         }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
+                return cp;
+            }
+        }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -143,7 +161,7 @@ namespace krri_ver1
             string FFT_main_Hz = "";
             string FFT_Max_Value = "";
 
-            if (sp_data.Length > 5 && sp_data.Length < 10)
+            if (sp_data.Length > 5 && sp_data.Length < 15)
             {
 
                 //sp_data.Length-1 하는 이유 = 마지막 배열은 \r\n
@@ -171,6 +189,8 @@ namespace krri_ver1
                 Chart_Temp.Series["Series2"].Points.Add(Temperature_TH);
                 Chart_Humid.Series["Series1"].Points.Add(float.Parse(sp_data[6]));
                 Chart_Humid.Series["Series2"].Points.Add(Humidity_TH);
+                Chart_Pressure.Series["Series1"].Points.Add(float.Parse(sp_data[7]));
+                Chart_Pressure.Series["Series2"].Points.Add(Pressure_TH);
                 Label_Dust.Text = sp_data[0];
                 Label_Co2.Text = sp_data[1];
                 Label_Sound.Text = sp_data[2];
@@ -178,6 +198,7 @@ namespace krri_ver1
                 Label_Vos.Text = sp_data[4];
                 Label_Temp.Text = sp_data[5];
                 Label_Humi.Text = sp_data[6];
+                Label_Pressure.Text = sp_data[7];
 
                 if (Chart_Dust.Series["Series1"].Points.Count > 20)
                 {
@@ -188,6 +209,7 @@ namespace krri_ver1
                     Chart_Voc.Series["Series1"].Points.RemoveAt(0);
                     Chart_Temp.Series["Series1"].Points.RemoveAt(0);
                     Chart_Humid.Series["Series1"].Points.RemoveAt(0);
+                    Chart_Pressure.Series["Series1"].Points.RemoveAt (0);
 
                     Chart_Dust.Series["Series2"].Points.RemoveAt(0);
                     Chart_Co2.Series["Series2"].Points.RemoveAt(0);
@@ -196,6 +218,7 @@ namespace krri_ver1
                     Chart_Voc.Series["Series2"].Points.RemoveAt(0);
                     Chart_Temp.Series["Series2"].Points.RemoveAt(0);
                     Chart_Humid.Series["Series2"].Points.RemoveAt(0);
+                    Chart_Pressure.Series["Series2"].Points.RemoveAt(0);
                 }
 
 
@@ -230,6 +253,17 @@ namespace krri_ver1
                     Button_Humi_Alram.BackColor = Color.LightSkyBlue;
                     dataGridView_Alram.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"),"Humidity",sp_data[6]);
                 }
+                if (float.Parse(sp_data[6]) > Humidity_TH)
+                {
+                    Button_Humi_Alram.BackColor = Color.LightSkyBlue;
+                    dataGridView_Alram.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Humidity", sp_data[6]);
+                }
+                if (float.Parse(sp_data[7]) > Pressure_TH)
+                {
+                    Button_Pressure_Alram.BackColor = Color.LightSkyBlue;
+                    dataGridView_Alram.Rows.Add(DateTime.Now.ToString("yyyy.MM.dd.HH:mm:ss"), "Pressure", sp_data[7]);
+                }
+
 
 
 
@@ -337,6 +371,10 @@ namespace krri_ver1
             Button_Humi_Alram.BackColor = Color.Black;
         }
 
+        private void Button_Pressure_Alram_Click(object sender, EventArgs e)
+        {
+            Button_Pressure_Alram.BackColor = Color.Black;
+        }
 
 
         //FFT 버튼
@@ -424,7 +462,7 @@ namespace krri_ver1
         private void button2_Click(object sender, EventArgs e)
         {
             Form2 form = new Form2(this);
-            form.Threshold_Value_change(Dust_TH, Co2_TH, Sound_TH, Wind_TH, Voc_TH, Temperature_TH, Humidity_TH);
+            form.Threshold_Value_change(Dust_TH, Co2_TH, Sound_TH, Wind_TH, Voc_TH, Temperature_TH, Humidity_TH, Pressure_TH);
             form.Show();
         }
 
@@ -435,6 +473,8 @@ namespace krri_ver1
                 serialPort1.WriteLine(new_dB_value);
             }
         }
+
+        
     }
 
 }
