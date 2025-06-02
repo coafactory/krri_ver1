@@ -164,6 +164,25 @@ namespace krri_ver1
             if (sp_data.Length > 5 && sp_data.Length < 15)
             {
 
+                float wind_temp = float.Parse(sp_data[3]);
+                float wind_ms = 0;
+                if (wind_temp < 1588)
+                    wind_ms = 0.0013f * wind_temp - 1.0647f;
+                else if (wind_temp < 2643)
+                    wind_ms = 0.0019f * wind_temp - 1.0172f;
+                else if (wind_temp < 3475)
+                    wind_ms = 0.0024f * wind_temp - 2.3432f;
+                else if (wind_temp < 3872)
+                    wind_ms = 0.0050f * wind_temp - 11.375f;
+                else
+                    wind_ms = 0.0089f * wind_temp - 26.46f;
+                sp_data[3]=wind_ms.ToString();
+
+                float voc_temp = float.Parse (sp_data[4])/4096;
+                sp_data [4]=voc_temp.ToString();
+
+
+
                 //sp_data.Length-1 하는 이유 = 마지막 배열은 \r\n
                 for (int i = 0; i < sp_data.Length - 1; i++)
                 {
