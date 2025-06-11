@@ -176,10 +176,11 @@ namespace krri_ver1
                     wind_ms = 0.0050f * wind_temp - 11.375f;
                 else
                     wind_ms = 0.0089f * wind_temp - 26.46f;
-                sp_data[3]=wind_ms.ToString();
+                sp_data[3] = string.Format("{0:N2}", wind_ms); 
+                    //wind_ms.ToString();
 
-                float voc_temp = float.Parse (sp_data[4])/4096;
-                sp_data [4]=voc_temp.ToString();
+                float voc_temp = float.Parse (sp_data[4])/4096*5;
+                sp_data [4]= string.Format("{0:N2}", voc_temp);
 
 
 
